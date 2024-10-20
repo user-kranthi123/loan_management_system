@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+{% load widget_tweaks %}
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+       /*  body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f7f7f7;
+        } */
+        .login-container {
+            display: flex;
+            height: 40%;
+            width: 100%;
+            margin-left: 20%;
+            margin-top: 200px;
+            max-width: 60%;
+            background: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+      
+        .login-form {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .login-form .form-control {
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .login-form .btn-primary {
+            width: 100%;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .login-form .forgot-password {
+            display: block;
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .login-form .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'home/navbar.html' %}
+    <div class="login-container">
+        <div class="login-form">
+            <h2>Signup</h2>
+            <div>{% if messages %}
+                {% for message in messages %}
+                  <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div> 
+            <form method="post" autocomplete="off" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group col cols-md-5 mx-3">
+                        <label for="username">Username</label>
+                        {% render_field userForm.username class="form-control" placeholder="Enter Username" %}
+                    </div>
+                    <div class="form-group col cols-md-5 mx-3">
+                        <label for="email">Email</label>
+                        {% render_field userForm.email class="form-control" placeholder="Enter Email" %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col cols-md-5 mx-3">
+                        <label for="password1">Password</label>
+                        {% render_field userForm.password1 class="form-control" placeholder="Enter Password" %}
+                    </div>
+                    <div class="form-group col cols-md-5 mx-3">
+                        <label for="password2">Confirm Password</label>
+                        {% render_field userForm.password2 class="form-control" placeholder="Re Enter Password" %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group  col cols-md-5 mx-3">
+                        <label for="mobile">Mobile</label>
+                        {% render_field customerForm.mobile class="form-control" placeholder="Enter mobile" %}
+                    </div>
+                    <div class="form-group col cols-md-5 mx-3">
+                        <label for="address">Address</label>
+                        {% render_field customerForm.address class="form-control" placeholder="Enter Address" %}
+                    </div>
+                </div>
+                
+                <div class="form-group cols-md-5 mx-3">
+                    <label for="address">Profile Picture</label>
+                    {% render_field customerForm.profile_pic class="form-control" placeholder="Upload your profile pic" %}
+                </div>
+                <!-- <a href="#" class="forgot-password">Forgot password?</a> -->
+                <div class=" d-flex flex-col">
+                    <button type="clear" class="btn btn-outline-secondary w-50 mx-3 form-group cols-md-4">Clear</button>
+                    <button type="submit" class="btn btn-primary form-group w-50 mx-3 cols-md-4">Signup</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

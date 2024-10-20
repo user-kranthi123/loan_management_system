@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+{% load static %}
+{% load widget_tweaks %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .jumbotron {
+            /* background: url('{% static "images/health.jpg" %}') no-repeat center center; */
+            background-size: cover;
+            color: white;
+            height: 400px;
+        }
+        .card {
+            margin: 20px 0;
+        }
+        .card img {
+            height: 200px;
+            object-fit: cover;
+        }
+        .form-container {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+        }
+        /* .nav-container {
+            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
+        } */
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light  bg-outline-secondary  shadow-sm p-3 mb-5 alert alert-success border-b-2 nav-container text-light fixed-top z-100 top-0">
+        <a class="navbar-brand" href="/customer/dashboard">Loan Management System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/customer/update-details">updateDetails</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/view_loan_types">All loans</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/customer/apply-for-loan">Apply loan</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/customer/dashboard">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</body>
+</html>
