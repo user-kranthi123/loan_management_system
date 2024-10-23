@@ -80,12 +80,12 @@ CSRF_COOKIE_SECURE=False
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
+""" DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-}
+} """
 """ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -95,8 +95,18 @@ DATABASES = {
         'HOST': os.environ['DB_HOST'],
         'PORT': os.getenv('DB_PORT', default=3306),
     }
-} """
+}  """
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "lms",
+        'USER': "admin",
+        'PASSWORD': "epBvX7tn.2T8p~W",
+        'HOST': "x23113383-lms-db.chwlezgyi7rm.eu-west-1.rds.amazonaws.com",
+        'PORT': os.getenv('DB_PORT', default=3306),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

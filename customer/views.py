@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 import requests
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from lms_core.exceptions.lms_exception import UserException, DocumentException
 from lms_core.calculator.eligibility_calculator import get_customer_eligibility
@@ -17,7 +18,7 @@ from lms import forms as LFORM
 from decimal import *
 from datetime import datetime
 
-DOCUMENT_API_GATEWAY = ""
+DOCUMENT_API_GATEWAY = "https://dspa0k9alc.execute-api.eu-west-1.amazonaws.com/lms-staging/docs/get-signed-url"
 
 def login_view(request):
     """
@@ -65,15 +66,15 @@ def signup_page_view(request):
                 customer =  customer_form.save(commit=False)
                 profile_pic  = request.FILES["profile_pic"]
                 # Generate a signed token for document upload using lambda function
-                # response = get_signed_token(request)
-                # if(response['status']=='SUCCESS') :
+                response = get_signed_token(request)
+                if(response['status']=='SUCCESS') :
                     #upload the profile_pic to s3 storage and save the url_path
-                    # print('upload document respone: ', upload_doc_to_s3(response['data'], profile_pic))
-                # customer.s3_document_url = f"{response['data']['url']}{response['data']['fields']['key']}"
+                    print('upload document respone: ', upload_doc_to_s3(response['data'], profile_pic))
+                customer.s3_document_url = f"{response['data']['url']}{response['data']['fields']['key']}"
                 user.save()
                 customer.user = user
                 customer.save()
-                LMODEL.LoanCustomer.objects.get_or_create(customer=customer)
+                # LMODEL.LoanCustomer.objects.get_or_create(customer=customer)
                 # Add the customer to LMS_USER group
                 customer_group = Group.objects.get_or_create(name='LMS_USER')
                 customer_group[0].user_set.add(user)
@@ -96,12 +97,20 @@ def signup_page_view(request):
     data = {'userForm': user_form, 'customerForm':customer_form}
     return render(request,'home/signup.html', data)
 
+@login_required(login_url='login_page')
 def dashboard_view(request):
     data= {}
     customer = CMODEL.Customer.objects.get(user=request.user)
     data['customer'] =customer
-    loan_customer = LMODEL.LoanCustomer.objects.get(customer=customer)
-    applications = LMODEL.LoanApplication.objects.filter(customer=loan_customer)
+    try:
+        loan_customer = LMODEL.LoanCustomer.objects.get(customer=customer)
+    except Exception as e:
+        print(e)
+        loan_customer = None
+    if loan_customer:
+        applications = LMODEL.LoanApplication.objects.filter(customer=loan_customer)
+    else:
+        applications = []
     loans = LMODEL.Loan.objects.filter(application__customer=loan_customer)
     active_loans = 0
     pending_applications = 0
@@ -126,13 +135,16 @@ def dashboard_view(request):
     data['metrics'] = metrics
     print('data for dashboard: ', data)
     return render(request, 'customer/dashboard.html', context= data)
-
+@login_required(login_url='login_page')
 def apply_for_loan(request):
     data = {}
     form = LFORM.LoanApplicationForm()
     try:
         customer = CMODEL.Customer.objects.get(user=request.user)
-        loan_customer = LMODEL.LoanCustomer.objects.get(customer = customer)
+        try:
+            loan_customer = LMODEL.LoanCustomer.objects.get(customer = customer)
+        except Exception as e:
+            raise LoanException("Please update your income and credit score")
         previous_loans = LMODEL.Loan.objects.filter(application__customer=loan_customer)
         data['customer'] = customer
         data['loan_customer'] = loan_customer
@@ -150,11 +162,11 @@ def apply_for_loan(request):
                 loan_application.loan_amount = new_loan_amount
                 # Handle uploaded documents and generate document URLs
                 files = request.FILES['documents']
-                # response = get_signed_token(request)
-                # if(response['status']=='SUCCESS') :
+                response = get_signed_token(request)
+                if(response['status']=='SUCCESS') :
                     #upload the documents to s3 storage and save the url_path
-                    # print('upload document respone: ', upload_doc_to_s3(response['data'], files))
-                # loan_application.s3_document_url = f"{response['data']['url']}{response['data']['fields']['key']}"
+                    print('upload document respone: ', upload_doc_to_s3(response['data'], files))
+                loan_application.s3_document_url = f"{response['data']['url']}{response['data']['fields']['key']}"
                 loan_application.save()
                 print('loan_application: ',loan_application)
                 calculated_emi = calculate_emi(loan_application)
@@ -171,6 +183,7 @@ def apply_for_loan(request):
     data['form'] = form
     return render(request, 'lms/apply_for_loan.html', context=data)
 
+@login_required(login_url='login_page')
 def pay_emi_view(request, pk):
     data = {}
     try:
@@ -200,7 +213,6 @@ def pay_emi_view(request, pk):
     data['form'] = LFORM.EMIPaymentForm()
     return render(request, 'lms/emi_transaction.html', context= data)
 
-
 def upload_doc_to_s3(data, file):
     files = {'file':file.read()}
     response = requests.post(data['url'], data = data['fields'],files= files)
@@ -208,7 +220,6 @@ def upload_doc_to_s3(data, file):
         return 'Image Uploaded successfully'
     else:
         raise DocumentException("Unable to upload documents to s3")
-    pass
 
 def get_signed_token(request):
     response = requests.post(DOCUMENT_API_GATEWAY)
@@ -217,13 +228,12 @@ def get_signed_token(request):
     else:
         raise DocumentException("Unable to upload documents to s3")
 
-
+@login_required(login_url='login_page')
 def update_loan_customer(request):
     data = {}
     # Assuming the logged-in customer is linked with a LoanCustomer instance
     customer = CMODEL.Customer.objects.get(user= request.user)
     loan_customer, created = LMODEL.LoanCustomer.objects.get_or_create(customer=customer)
-    
     if request.method == 'POST':
         form = LFORM.LoanCustomerForm(request.POST, instance=loan_customer)
         print('LoanCustomerForm: ', form)

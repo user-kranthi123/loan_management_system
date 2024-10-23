@@ -7,8 +7,11 @@ from datetime import date
 from decimal import *
 from lms_core.calculator.eligibility_calculator import get_customer_eligibility
 from lms_core.exceptions.lms_exception import CustomerNotEligible
+from django.contrib.auth.decorators import login_required
 
 def home_view(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('postlogin') 
     return render(request, 'home/base.html')
 
 def post_login_view(request):
@@ -24,10 +27,16 @@ def view_all_loan_types(request):
     data = {'loan_types': loanTypes}
     return render(request, 'lms/all_loan_types.html',context=data)
 
+@login_required(login_url='login_page')
 def check_loan_eligibility(request, pk):
     loan_type = LMODEL.LoanType.objects.get(id=pk)
     customer = CMODEL.Customer.objects.get(user=request.user)
-    loan_customer = LMODEL.LoanCustomer.objects.get(customer = customer)
+    try:
+        loan_customer = LMODEL.LoanCustomer.objects.get(customer = customer)
+    except Exception as e:
+        data['status']='FAILURE'
+        data['message'] = "Please update your income and credit score"
+        return JsonResponse(data)
     prev_loans = LMODEL.Loan.objects.filter(application__customer=loan_customer)
     data = {'status':'SUCCESS'}
     try:

@@ -13,8 +13,8 @@ class LoanType(models.Model):
 
 class LoanCustomer(models.Model):
     customer = models.ForeignKey(CUST_MODEL.Customer, on_delete=models.CASCADE)
-    income = models.DecimalField(max_digits=10, decimal_places=2)
-    credit_score = models.IntegerField()
+    income = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    credit_score = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.customer.user}-{self.id}"
