@@ -89,24 +89,15 @@ CSRF_COOKIE_SECURE=False
 """ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ['DB_SCHEMA'],
-        'USER': os.environ['DB_USERNAME'],
-        'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': os.environ['DB_HOST'],
-        'PORT': os.getenv('DB_PORT', default=3306),
+        'NAME': os.environ['LMS_DB_SCHEMA'],
+        'USER': os.environ['LMS_DB_USERNAME'],
+        'PASSWORD': os.environ['LMS_DB_PASSWORD'],
+        'HOST': os.environ['LMS_DB_HOST'],
+        'PORT': os.getenv('LMS_DB_PORT', default=3306),
     }
 }  """
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': "lms",
-        'USER': "admin",
-        'PASSWORD': "epBvX7tn.2T8p~W",
-        'HOST': "x23113383-lms-db.chwlezgyi7rm.eu-west-1.rds.amazonaws.com",
-        'PORT': os.getenv('DB_PORT', default=3306),
-    }
-}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

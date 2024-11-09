@@ -4,57 +4,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Loan Management System</title>
+    <!-- <link rel="stylesheet" href="style.css"> -->
     <style>
-        .jumbotron {
-            /* background: url('{% static "images/Loan-Management-system.png" %}') no-repeat center center; */
-            background-size: cover;
-            color: white;
-            /* height: 400px; */
-        }
-        .card {
-            margin: 20px 0;
-            border: none;
-            height: 400px;
-        }
-        .card:hover {
-            box-shadow: 2px 4px 2px 4px rgb(198, 225, 238);
-        }
-        .card img {
-            height: 200px;
-            object-fit: cover;
-        }
-        .form-container {
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 10px;
-        }
+        * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.body-container {
+    background-color: #f7f7f7;
+    /* color: white; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
+}
+
+.container {
+    text-align: center;
+    max-width: 800px;
+}
+
+header h1 {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.highlight {
+    /* background-color: #FF6C00; */
+    padding: 5px 10px;
+    color: white;
+    border-radius: 5px;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.illustration img {
+    max-width: 100%;
+    height: auto;
+}
+
+footer {
+    margin-top: 20px;
+    font-size: 1em;
+    color: #ddd;
+}
+
+footer p {
+    display: inline-flex;
+    align-items: center;
+}
+
+footer p::before {
+    content: "⏩";
+    margin-right: 5px;
+    font-size: 1.2em;
+}
     </style>
 </head>
-<body style="background-color: #f7f7f7;">
-    <!-- Navbar -->
-   {% include "home/navbar.html" %}
-
-    <!-- Jumbotron -->
-    <div class="jumbotron text-center text-dark mt-5">
-        <h3 class="display-5">Welcome to the Loan Management System</h3>
-        <p class="lead">Get loans for your dreams</p>
-        <a class="btn btn-primary btn-lg" href="/customer/signup" role="button">Get Started</a>
+<body>
+    <div class="body-container">
+    {% include 'home/navbar.html' %}
+    <div class="container">
+        <header>
+            <h3>Welcome to</h3>
+            <h1 class="text-dark">Loan Management System</h1>
+            <p class="subtitle">Loans for all your <span class="text-success">dreams</span></p>
+        </header>
     </div>
-
-    <!-- Modules Section -->
-    <section id="loan_types" class="container bg-light my-5">
-        <img src='{% static "/images/Loan-Management-system.png" %}' class="loan-image" alt="Loan Management">
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3 fiexd-bottom">
+</div>
+    <footer class="bg-dark text-white text-center w-100 py-3 fiexd-bottom">
         <p>&copy; 2024 Loan Management System. All rights reserved.</p>
     </footer>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

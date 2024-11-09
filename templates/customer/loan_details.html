@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+{% load static %}
+{% load widget_tweaks %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+        }
+        .sidebar {
+            height: 100vh;
+            width: 250px;
+            background-color: #f3f3f3;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            padding-top: 60px;
+            display: none;
+            border-right: 2px solid #c3c3c3;
+            margin-right: 10px;
+        }
+        .sidebar a {
+            padding: 15px 10px;
+            text-align: center;
+            font-size: 18px;
+            color: black;
+            display: block;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #c3c3c3;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            flex-grow: 1;
+        }
+        .card {
+            margin: 20px 0;
+            background-color: #f7f7f7;
+
+        }
+        .custom-card {
+            background-color: #f7f7f7;
+
+        }
+        .custom-card:hover {
+            box-shadow: 1px 3px 1px 3px solid #495057;
+        }
+        
+        .card:hover {
+            box-shadow: 1px 3px 1px 3px solid #495057;
+        }
+        .box-class {
+            /* border: 2px solid #eee; */
+            /* background-color: #f7f7f7; */
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .circular-image {
+            width: 100px; /* Adjust the size as needed */
+            height: 100px; /* Adjust the size as needed */
+            border-radius: 50%;
+            border: 5px solid #28a745; /* Adjust the border color and size as needed */
+            object-fit: cover; /* Ensure the image covers the entire area */
+        }
+    </style>
+    <script>
+    function handleDocumentView(path) {
+            fetch(path)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+            URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error('Error opening document:', error));
+    }
+    </script>
+</head>
+<body class="bg-light" style=" width: 80%; margin-top:100px">
+
+    <!-- Main content -->
+    <div class="main-content">
+        {% include 'customer/navbar.html' %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+
+        <!-- Applications -->
+        <div id="applications" class="bg-outline-secondary border-0 shadow-sm p-3 mb-5 bg-white rounded">
+            <h4 class="text-center text-muted display-6">Loan Applications</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>customer</th>
+                            <th>loan_type</th>
+                            <th>loan_amount</th>
+                            <th>application_date</th>
+                            <th>status</th>
+                            <th>notes</th>
+                            <th>Documents</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for apcn in applications %}
+                        <tr class="border-0 border-b-2">
+                            <td>{{apcn.customer}}</td>
+                            <td>{{apcn.loan_type}}</td>
+                            <td>${{apcn.loan_amount}}</td>
+                            <td>{{apcn.application_date}}</td>
+                            <td>{% if apcn.status == 'APPROVED' %}
+                                <span class="badge badge-success">Approved</span>
+                                {% elif apcn.status == 'PENDING' %}
+                                <span class="badge badge-primary">Pending</span>
+                                {% elif apcn.status == 'REJECTED' %}
+                                <span class="badge badge-danger">Rejected</span>
+                                {% endif %}
+                            </td>
+                            <td>{{apcn.notes}}</td>
+                            <td>{% if apcn.s3_document_url %}
+                                    <button class="btn btn-warning" onclick="handleDocumentView('{{apcn.s3_document_url}}')">view</button>
+                                    <!-- <img src='{{ apcn.s3_document_url }}' class="circular-image" /> -->
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Loans -->
+        <div id="loans" class="bg-outline-secondary border-0 shadow-sm p-3 mb-5 bg-white rounded">
+            <h4 class="text-center text-muted">Loans</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>application</th>
+                            <th>start_date</th>
+                            <th>loan_term_months</th>
+                            <th>total_amount</th>
+                            <th>remaining_balance</th>
+                            <th>emi_amount</th>
+                            <th>status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for loan in loans %}
+                        <tr>
+                            <td>{{loan.application}}</td>
+                            <td>{{loan.start_date}}</td>
+                            <td>{{loan.loan_term_months}}</td>
+                            <td>{{loan.total_amount}}</td>
+                            <td>{{loan.remaining_balance}}</td>
+                            <td>{{loan.emi_amount}}</td>
+                            <td>{% if loan.status == 'ACTIVE' %}
+                                <span class="badge badge-success">Active</span>
+                                {% elif loan.status == 'PENDING' %}
+                                <span class="badge badge-primary">Pending</span>
+                                {% elif loan.status == 'CLOSED' %}
+                                <span class="badge badge-secondary">Closed</span>
+                                {% elif loan.status == 'OVERDUE' %}
+                                <span class="badge badge-danger">Overdue</span>
+                                {% endif %}
+                            </td>
+                            <td>{% if loan.remaining_balance > 0 and  loan.status != 'PENDING' and loan.status != 'CLOSED'  %}
+                                    <a href="{% url 'pay_emi' loan.id  %}"  class="p-2 text-decoration-none text-primary">pay_emi</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+<!-- Payments -->
+<div id="payments" class="bg-outline-secondary border-0 shadow-sm p-3 mb-5 bg-white rounded">
+    <h4 class="text-center text-muted display-6">Payments</h4>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>loan</th>
+                    <th>payment_date</th>
+                    <th>amount_paid</th>
+                    <th>remaining_balance_after_payment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emi in transactions %}
+                <tr class="border-0 border-b-2">
+                    <td>{{emi.loan}}</td>
+                    <td>{{emi.payment_date}}</td>
+                    <td>${{emi.amount_paid}}</td>
+                    <td>{{emi.remaining_balance_after_payment}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

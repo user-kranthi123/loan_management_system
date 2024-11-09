@@ -18,7 +18,9 @@ from lms import forms as LFORM
 from decimal import *
 from datetime import datetime
 
-DOCUMENT_API_GATEWAY = "https://dspa0k9alc.execute-api.eu-west-1.amazonaws.com/lms-staging/docs/get-signed-url"
+
+DOCUMENT_API_GATEWAY = os.getenv("LMS_GATEWAY_URL")+"/docs/get-signed-url"
+
 
 def login_view(request):
     """
@@ -99,35 +101,19 @@ def signup_page_view(request):
 
 @login_required(login_url='login_page')
 def dashboard_view(request):
-    data= {}
-    customer = CMODEL.Customer.objects.get(user=request.user)
-    data['customer'] =customer
-    try:
-        loan_customer = LMODEL.LoanCustomer.objects.get(customer=customer)
-    except Exception as e:
-        print(e)
-        loan_customer = None
-    if loan_customer:
-        applications = LMODEL.LoanApplication.objects.filter(customer=loan_customer)
-    else:
-        applications = []
-    loans = LMODEL.Loan.objects.filter(application__customer=loan_customer)
     active_loans = 0
     pending_applications = 0
     total_amount = 0
     pending_amount = 0
-    for loan in loans:
+    data = get_loan_details(request)
+    for loan in data['loans']:
         if loan.status=='ACTIVE':
             active_loans+=1
             total_amount+=loan.total_amount
             pending_amount+=loan.remaining_balance
-    for app in applications:
+    for app in data['applications']:
         if app.status == 'PENDING':
             pending_applications+=1
-    data['transactions'] = LMODEL.EMI.objects.filter(loan__in=loans)
-    data['loan_customer'] = loan_customer
-    data['applications'] = applications
-    data['loans'] = loans
     metrics = {'active_loans': active_loans, 
                'pending_amount': pending_amount, 
                'total_amount':total_amount,
@@ -249,3 +235,34 @@ def update_loan_customer(request):
     data['customer'] = customer
     data['loan_customer'] = loan_customer
     return render(request, 'customer/update-customer.html', context=data)
+
+@login_required(login_url='login_page')
+def loan_details_view(request):
+    data ={}
+    try:
+        data = get_loan_details(request)
+    except Exception as e:
+        print(str(e))
+        messages.error('unable to get loan_details')
+    return render(request, 'customer/loan_details.html', context=data)
+
+def get_loan_details(request):
+    data= {}
+    customer = CMODEL.Customer.objects.get(user=request.user)
+    data['customer'] =customer
+    try:
+        loan_customer = LMODEL.LoanCustomer.objects.get(customer=customer)
+    except Exception as e:
+        print(e)
+        loan_customer = None
+        messages.error(request,'<a href="customer/update-details" />Update </a> your details for loan eligibility.')
+    if loan_customer:
+        applications = LMODEL.LoanApplication.objects.filter(customer=loan_customer)
+    else:
+        applications = []
+    loans = LMODEL.Loan.objects.filter(application__customer=loan_customer)
+    data['transactions'] = LMODEL.EMI.objects.filter(loan__in=loans)
+    data['loan_customer'] = loan_customer
+    data['applications'] = applications
+    data['loans'] = loans
+    return data

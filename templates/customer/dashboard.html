@@ -67,9 +67,48 @@
             width: 100px; /* Adjust the size as needed */
             height: 100px; /* Adjust the size as needed */
             border-radius: 50%;
-            border: 5px solid #28a745; /* Adjust the border color and size as needed */
+            border: 5px solid #6c757d; /* Adjust the border color and size as needed */
             object-fit: cover; /* Ensure the image covers the entire area */
         }
+        /* User Card Styles */
+.user-card {
+    display: flex;
+    align-items: center;
+    /* background-color: #f5f5f5; */
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* max-width: 400px; */
+}
+
+/* Profile Picture */
+.profile-pic {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+    /* User Information */
+    .user-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-name {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .user-email,
+    .user-role {
+        font-size: 0.9em;
+        color: #555;
+        margin: 2px 0;
+    }
+
     </style>
     <script>
         function handleDocumentView(url) {
@@ -140,146 +179,42 @@
             </div>
         </div>
 
-
-        <!-- Applications -->
-        <div id="applications" class="bg-outline-secondary border-0 shadow-sm p-3 mb-5 bg-white rounded">
-            <h4 class="text-center text-muted display-6">Loan Applications</h4>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>customer</th>
-                            <th>loan_type</th>
-                            <th>loan_amount</th>
-                            <th>application_date</th>
-                            <th>status</th>
-                            <th>notes</th>
-                            <th>Documents</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for apcn in applications %}
-                        <tr class="border-0 border-b-2">
-                            <td>{{apcn.customer}}</td>
-                            <td>{{apcn.loan_type}}</td>
-                            <td>${{apcn.loan_amount}}</td>
-                            <td>{{apcn.application_date}}</td>
-                            <td>{% if apcn.status == 'APPROVED' %}
-                                <span class="badge badge-success">Approved</span>
-                                {% elif apcn.status == 'PENDING' %}
-                                <span class="badge badge-primary">Pending</span>
-                                {% elif apcn.status == 'REJECTED' %}
-                                <span class="badge badge-danger">Rejected</span>
-                                {% endif %}
-                            </td>
-                            <td>{{apcn.notes}}</td>
-                            <td>{% if apcn.s3_document_url %}
-                                    <button class="btn btn-warning" onclick="handleDocumentView('{{apcn.s3_document_url}}')">view</button>
-                                    <img src='{{ apcn.s3_document_url }}' class="circular-image" />
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <!-- My Policies -->
-        <div id="loans" class="bg-outline-secondary border-0 shadow-sm p-3 mb-5 bg-white rounded">
-            <h4 class="text-center text-muted">My Loans</h4>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>application</th>
-                            <th>start_date</th>
-                            <th>loan_term_months</th>
-                            <th>total_amount</th>
-                            <th>remaining_balance</th>
-                            <th>emi_amount</th>
-                            <th>status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for loan in loans %}
-                        <tr>
-                            <td>{{loan.application}}</td>
-                            <td>{{loan.start_date}}</td>
-                            <td>{{loan.loan_term_months}}</td>
-                            <td>{{loan.total_amount}}</td>
-                            <td>{{loan.remaining_balance}}</td>
-                            <td>{{loan.emi_amount}}</td>
-                            <td>{% if loan.status == 'ACTIVE' %}
-                                <span class="badge badge-success">Active</span>
-                                {% elif loan.status == 'PENDING' %}
-                                <span class="badge badge-primary">Pending</span>
-                                {% elif loan.status == 'CLOSED' %}
-                                <span class="badge badge-secondary">Closed</span>
-                                {% elif loan.status == 'OVERDUE' %}
-                                <span class="badge badge-danger">Overdue</span>
-                                {% endif %}
-                            </td>
-                            <td>{% if loan.remaining_balance > 0 and  loan.status != 'PENDING' and loan.status != 'CLOSED'  %}
-                                    <a href="{% url 'pay_emi' loan.id  %}"  class="p-2 text-decoration-none text-primary">pay_emi</a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
         
-        <!-- Payments -->
-        <div id="payments" class="bg-outline-secondary border-0 shadow-sm p-3 mb-5 bg-white rounded">
-            <h4 class="text-center text-muted display-6">My Payments</h4>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>loan</th>
-                            <th>payment_date</th>
-                            <th>amount_paid</th>
-                            <th>remaining_balance_after_payment</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for emi in transactions %}
-                        <tr class="border-0 border-b-2">
-                            <td>{{emi.loan}}</td>
-                            <td>{{emi.payment_date}}</td>
-                            <td>${{emi.amount_paid}}</td>
-                            <td>{{emi.remaining_balance_after_payment}}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
         <!-- Account -->
         <div id="account" class="box-class bg-outline-secondary border-0 shadow-sm p-3 mb-5 bg-white rounded">
-            <h4 class="text-center text-muted">Account Information</h4>
+            <h4 class="text-center text-muted">Profile Information</h4>
             <div class="d-flex align-items-center justify-content-start">
                 <div class="col w-50">
                         <img src='{{ customer.s3_document_url }}' class="circular-image" />
                 </div>
-                <div class="col">
-                    <p>Username: {{request.user.username}}</p>
-                    <p>Email: {{request.user.email}}</p>
-                    <p>mobile: {{customer.mobile}}</p>
+                <div class="col user-info">
+                    <p> <i class="fas fa-user mx-3"></i><span class="user-name"> {{request.user.username}} </span></p>
+                    <p class="user-email"><i class="fas fa-envelope mx-3"></i>{{request.user.email}}</p>
+                    <p class="user-role"><i class="fas fa-mobile-alt mx-3"></i> {{customer.mobile}}</p>
                 </div>
+                <div class="col user-info">
+                {% if loan_customer %}
+                    <p><i class="fas fa-dollar-sign mx-3"></i><span class="text-success"> {{loan_customer.income}}</span> monthly income</p>
+                    <p> <i class="fas fa-chart-line mx-3"></i>
+                        {% if loan_customer.credit_score >= 800 %}
+                        <span class="badge badge-success">{{loan_customer.credit_score}}</span>
+                        {% elif loan_customer.credit_score > 600 %}
+                        <span class="badge badge-info">{{loan_customer.credit_score}}</span>
+                        {% else %}
+                        <span class="badge badge-warning">{{loan_customer.credit_score}}</span>
+                        {% endif %} credit score
+                    </p>
+                {% endif %}
+            </div>
             </div>
         </div>
-
-        <!-- Support -->
+    
+<!--         
         <div id="support" class=" box-class bg-outline-secondary border-0 shadow-sm p-3 mb-5 bg-white rounded">
             <h4 class="text-center text-muted">Support</h4>
             <p>If you need any assistance, please contact our support team.</p>
             <p>Email: support@lms.com</p>
-        </div>
+        </div> -->
     </div>
     
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

@@ -8,5 +8,6 @@ urlpatterns = [
      path('dashboard', views.dashboard_view, name= 'customer_dashboard'),
      path('apply-for-loan', views.apply_for_loan, name='apply_for_loan'),
      path('pay-emi/<int:pk>', views.pay_emi_view,name='pay_emi'),
-     path('update-details', views.update_loan_customer, name='update_loan_customer')
+     path('update-details', views.update_loan_customer, name='update_loan_customer'),
+     path('loan-details',views.loan_details_view,name='loan-details')
 ]
