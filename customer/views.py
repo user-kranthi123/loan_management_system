@@ -255,7 +255,7 @@ def get_loan_details(request):
     except Exception as e:
         print(e)
         loan_customer = None
-        messages.error(request,'<a href="customer/update-details" />Update </a> your details for loan eligibility.')
+        messages.warning(request,'Update your details for loan eligibility.')
     if loan_customer:
         applications = LMODEL.LoanApplication.objects.filter(customer=loan_customer)
     else:
