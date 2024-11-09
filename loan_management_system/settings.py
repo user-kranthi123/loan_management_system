@@ -86,7 +86,7 @@ CSRF_COOKIE_SECURE=False
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 } """
-""" DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ['LMS_DB_SCHEMA'],
@@ -95,7 +95,7 @@ CSRF_COOKIE_SECURE=False
         'HOST': os.environ['LMS_DB_HOST'],
         'PORT': os.getenv('LMS_DB_PORT', default=3306),
     }
-}  """
+}
 
 
 
