@@ -19,7 +19,7 @@ from decimal import *
 from datetime import datetime
 
 
-DOCUMENT_API_GATEWAY = os.getenv("LMS_GATEWAY_URL")+"/docs/get-signed-url"
+DOCUMENT_API_GATEWAY = os.getenv("LMS_GATEWAY_URL", default="")+"/docs/get-signed-url"
 
 
 def login_view(request):
