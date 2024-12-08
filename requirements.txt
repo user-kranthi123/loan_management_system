@@ -11,5 +11,5 @@ django-core
 boto3
 django-storages
 requests
-x23113383-loan-management-system==0.0.2
+#x23113383-loan-management-system==0.0.2
 #psycopg2
